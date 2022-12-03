@@ -2,7 +2,7 @@
 
 <h2>Load Balancer IP: 146.190.0.158 </h2>
 
-<h2>Created By: Harkaran Kang A01292258 </h2>
+<h2>Created By: Harkaran Kang A01292258 Set B</h2>
 
 <h2> Load Balancer </h2>
 
