@@ -193,3 +193,115 @@ sudo mv ~/2420-assign-two/src /var/www/
 ```
 
 ![image](https://user-images.githubusercontent.com/98972110/205419498-9a1d3e51-fb80-4a83-a77f-8454c19f2f6e.png)
+
+<h2>Caddy File</h2>
+
+In your **wsl** create a **Caddy File**
+![image](https://user-images.githubusercontent.com/98972110/205418125-b9dfff70-8d38-4660-8d96-9bc914fa10ac.png)
+
+The content of the Caddy file should be 
+```
+http:// {
+    root * /var/www/html
+    reverse_proxy /api localhost:5050
+    file_server
+}
+```
+
+Once again share the ```2420-assign-two``` directory with your droplets
+
+```
+rsync -r <directory name> "username@dropletIP:~/" -e "ssh -i /home/<username>/.ssh/<sshkeyname> -o StrictHostKeyChecking=no"
+```
+
+![image](https://user-images.githubusercontent.com/98972110/205418380-952c8180-0d26-4f54-a440-bc81879f8d42.png)
+
+
+In both of the droplets move the **Caddyfile** to the ```/etc/caddy``` directory
+
+```
+cd 2420-assign-two
+sudo mkdir /etc/caddy/
+<password if prompted>
+cd ../
+sudo cp 2420-assign-two/Caddyfile /etc/caddy/
+ls /etc/caddy/
+```
+
+![image](https://user-images.githubusercontent.com/98972110/205418517-5844ff2e-b902-499c-898c-cc0eeccb7724.png)
+
+In both of the droplets move the ```caddy``` binary to ```/usr/bin``` directory
+
+```
+sudo cp caddy /usr/bin/
+```
+
+You can test if everything worked by using the following commands
+
+```
+ls /etc/caddy/
+ls /var/www/html
+ls /var/www/src
+ls /usr/bin/ | grep "caddy"
+```
+
+![image](https://user-images.githubusercontent.com/98972110/205419774-2abbf4d9-d2a8-4c6b-a5d4-289012b80e75.png)
+
+| If you don't have node_modules or the json files in your ```/var/www/src``` directory run the following |
+
+```
+cd /var/www/src/
+curl https://get.volta.sh | bash
+source ~/.bashrc
+volta install node
+npm install fastify
+```
+
+
+<h2>Creating Caddy Service File</h2>
+
+Go back to your ```wsl``` and create a caddy.service file in ```2420-assign-two``` directory and enter the following into it 
+
+![image](https://user-images.githubusercontent.com/98972110/205421457-278401a7-8482-4c72-8ad3-154d0016a707.png)
+
+```
+[Unit]
+Description=Serve HTML in /var/www using caddy
+After=network.target
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/caddy run --config /etc/caddy/Caddyfile
+ExecReload=/usr/bin/caddy reload --config /etc/caddy/Caddyfile
+TimeoutStopSec=5
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Copy your ```2420-assign-two``` directory to your droplets again
+
+```
+rsync -r <directory name> "username@dropletIP:~/" -e "ssh -i /home/<username>/.ssh/<sshkey-name> -o StrictHostKeyChecking=no"
+```
+
+![image](https://user-images.githubusercontent.com/98972110/205421735-731c2b97-143f-4216-ab45-72373ba69a5a.png)
+
+Move your caddy.service file into ```/etc/systemd/system/
+
+```
+sudo cp caddy.service /etc/systemd/system/
+```
+
+In your droplets **reload**,**start**, **enable** and check the **status** of your caddy file 
+
+```
+sudo systemctl daemon-reload
+sudo systemctl start caddy
+sudo systemctl enable --now caddy
+sudo systemctl status caddy
+```
+
+If everything goes right the output should look like this
+![image](https://user-images.githubusercontent.com/98972110/205423182-5d70a90a-b690-4e2b-99a8-7d1c32ff37d8.png)
