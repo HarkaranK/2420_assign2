@@ -1,5 +1,4 @@
 # 2420_assign2
-# 2420_assign2
 
 <h2>Load Balancer IP: 146.190.0.158 </h2>
 
