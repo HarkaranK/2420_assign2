@@ -1,0 +1,15 @@
+[Unit]
+Description=Service file to help run node service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/harkarn/.volta/bin/node /var/www/src/index.js
+User=harkarn
+Group=harkarn
+Restart=on-failure
+RestartSec=5
+SyslogIdentifier=hello_web
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,7 @@
+
+http:// {
+    root * /var/www/html
+    reverse_proxy /api localhost:5050
+    file_server
+}
+
