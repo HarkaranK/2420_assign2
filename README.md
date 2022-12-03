@@ -305,3 +305,69 @@ sudo systemctl status caddy
 
 If everything goes right the output should look like this
 ![image](https://user-images.githubusercontent.com/98972110/205423182-5d70a90a-b690-4e2b-99a8-7d1c32ff37d8.png)
+
+<h2>Node Service File</h2>
+
+In ```wsl``` create a new file called ```hello_web.service``` in the ```2420-assign-two```
+
+The content of the file should look like this
+```
+[Unit]
+Description=Service file to help run node service
+After=network.target
+
+[Service]
+Type=simple
+User=<username>
+Group=<username>
+ExecStart=/home/<username>/.volta/bin/node /var/www/src/index.js
+Restart=on-failure
+RestartSec=5
+SyslogIdentifier=hello_web
+
+[Install]
+WantedBy=multi-user.target
+```
+
+| Be sure to change username to your respective name |
+
+![image](https://user-images.githubusercontent.com/98972110/205423935-8dc5fa8c-b336-47a9-8c31-b0a97a75fd40.png)
+
+![image](https://user-images.githubusercontent.com/98972110/205425283-fd32ba14-969b-4da4-aa53-85561b1fb10a.png)
+
+
+Send a copy of your ```2420-assign-two``` directory to your droplets
+
+```
+rsync -r <directory name> "username@dropletIP:~/" -e "ssh -i /home/<username>/.ssh/<sshkey-name> -o StrictHostKeyChecking=no"
+```
+
+![image](https://user-images.githubusercontent.com/98972110/205424219-720d9ae2-a78e-4a28-8638-4746e065b3ad.png)
+
+In your droplets move the ```hello_web.service``` to the ```/etc/systemd/system``` directory
+
+```
+sudo cp 2420-assign-two/hello_web.service /etc/systemd/system/
+```
+![image](https://user-images.githubusercontent.com/98972110/205424287-20e5886a-fb3c-4d62-bd7d-83c1c537b0d5.png)
+
+
+In your droplets **reload**,**start**, **enable** and check the **status** of your caddy file 
+
+**Reload**, **start**, **enable** and view the **status** of the node service
+
+```
+sudo systemctl daemon-reload
+sudo systemctl start hello_web
+sudo systemctl enable --now hello_web
+sudo systemctl status hello_web.service
+```
+
+If everything is done correctly it should look like this
+
+![image](https://user-images.githubusercontent.com/98972110/205425369-897d09f2-567f-43cf-84ca-7cb96a1506b4.png)
+
+Now that it is running, you can open up a browser and put your ```load balancers IP```
+
+This is the display of both of my droplets files
+![image](https://user-images.githubusercontent.com/98972110/205426020-e930c268-8fee-4bdd-8a4b-190821c8cc38.png)
